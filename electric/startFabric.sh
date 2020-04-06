@@ -22,9 +22,8 @@ if [ "$CC_SRC_LANGUAGE" != "go" -a "$CC_SRC_LANGUAGE" != "golang" -a "$CC_SRC_LA
 fi
 
 # clean out any old identites in the wallets
-rm -rf javascript/wallet/*
-rm -rf java/wallet/*
-rm -rf typescript/wallet/*
+rm -rf javascript/userWallet/*
+rm -rf javascript/usageWallet/*
 
 # launch network; create channel and join peer to channel
 pushd ../test-network
@@ -37,8 +36,8 @@ cat <<EOF
 
 Total setup execution time : $(($(date +%s) - starttime)) secs ...
 
-Next, use the FabCar applications to interact with the deployed FabCar contract.
-The FabCar applications are available in multiple programming languages.
+Next, use the Electric applications to interact with the deployed Electric contract.
+The Electric applications are available in multiple programming languages.
 Follow the instructions for the programming language of your choice:
 
 JavaScript:
@@ -51,7 +50,7 @@ JavaScript:
 
   Then run the following applications to enroll the admin user, and register a new user
   called appUser which will be used by the other applications to interact with the deployed
-  FabCar contract:
+  Electric contract:
     node enrollAdmin
     node registerUser
 
