@@ -9,6 +9,14 @@ const FabricCAServices = require('fabric-ca-client');
 const fs = require('fs');
 const path = require('path');
 
+const cmdArgs = process.argv.slice(2);
+let walletName = 'userWallet'
+let userName = 'appUser' 
+if (cmdArgs && cmdArgs[0] === 'usage') {
+    walletName = 'usageWallet'
+    userName = 'usageAppUser' 
+}
+
 async function main() {
     try {
         // load the network configuration
@@ -20,12 +28,12 @@ async function main() {
         const ca = new FabricCAServices(caURL);
 
         // Create a new file system based wallet for managing identities.
-        const walletPath = path.join(process.cwd(), 'userWallet');
+        const walletPath = path.join(process.cwd(), walletName);
         const wallet = await Wallets.newFileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
-        const userIdentity = await wallet.get('appUser');
+        const userIdentity = await wallet.get(userName);
         if (userIdentity) {
             console.log('An identity for the user "appUser" already exists in the wallet');
             return;
@@ -46,11 +54,11 @@ async function main() {
         // Register the user, enroll the user, and import the new identity into the wallet.
         const secret = await ca.register({
             affiliation: 'org1.department1',
-            enrollmentID: 'appUser',
+            enrollmentID: userName,
             role: 'client'
         }, adminUser);
         const enrollment = await ca.enroll({
-            enrollmentID: 'appUser',
+            enrollmentID: userName,
             enrollmentSecret: secret
         });
         const x509Identity = {
@@ -61,7 +69,7 @@ async function main() {
             mspId: 'Org1MSP',
             type: 'X.509',
         };
-        await wallet.put('appUser', x509Identity);
+        await wallet.put(userName, x509Identity);
         console.log('Successfully registered and enrolled admin user "appUser" and imported it into the wallet');
 
     } catch (error) {

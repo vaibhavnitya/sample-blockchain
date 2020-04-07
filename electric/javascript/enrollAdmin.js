@@ -9,6 +9,12 @@ const { Wallets } = require('fabric-network');
 const fs = require('fs');
 const path = require('path');
 
+const cmdArgs = process.argv.slice(2);
+let walletName = 'userWallet'
+if (cmdArgs && cmdArgs[0] === 'usage') {
+    walletName = 'usageWallet'
+}
+
 async function main() {
     try {
         // load the network configuration
@@ -21,7 +27,7 @@ async function main() {
         const ca = new FabricCAServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.caName);
 
         // Create a new file system based wallet for managing identities.
-        const walletPath = path.join(process.cwd(), 'userWallet');
+        const walletPath = path.join(process.cwd(), walletName);
         const wallet = await Wallets.newFileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
 

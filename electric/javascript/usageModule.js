@@ -7,9 +7,11 @@
 const { Gateway, Wallets } = require('fabric-network');
 const path = require('path');
 const fs = require('fs');
-var ab2str = require('arraybuffer-to-string');
 
 let contract = null
+const startTime = '1554650825727'
+const userIdStart = 'USER0000'
+const userIdEnd = 'USER9999'
 
 async function initializeUsageModule() {
 	try {
@@ -23,16 +25,16 @@ async function initializeUsageModule() {
 		console.log(`Wallet path: ${walletPath}`);
 
 		// Check to see if we've already enrolled the user.
-		const identity = await wallet.get('appUser');
+		const identity = await wallet.get('usageAppUser');
 		if (!identity) {
-			console.log('An identity for the user "appUser" does not exist in the wallet');
+			console.log('An identity for the user "usageAppUser" does not exist in the wallet');
 			console.log('Run the registerUser.js application before retrying');
 			return;
 		}
 
 		// Create a new gateway for connecting to our peer node.
 		const gateway = new Gateway();
-		await gateway.connect(ccp, { wallet, identity: 'appUser', discovery: { enabled: true, asLocalhost: true } });
+		await gateway.connect(ccp, { wallet, identity: 'usageAppUser', discovery: { enabled: true, asLocalhost: true } });
 
 		// Get the network (channel) our contract is deployed to.
 		const network = await gateway.getNetwork('mychannel');
@@ -50,11 +52,13 @@ async function getAllUsage() {
 		code: 0,
 		message: 'Failed to get usage data'
 	}
-	
+	const startKey = `${userIdStart}${startTime}`
+	const endKey = `${userIdEnd}${(new Date).getTime()}`
+
 	const promise = new Promise((resolve, reject) => {
 		if (contract) {
 			try {
-				contract.evaluateTransaction('queryAllUsage')
+				contract.evaluateTransaction('queryAllUsage', startKey, endKey)
 				.then(result => {
 					console.log(`Transaction getAllUsage has been evaluated successfully`);
 					resolve({
@@ -78,30 +82,32 @@ async function getAllUsage() {
 async function getUsageForUser(userId) {
 	const error = {
 		code: 0,
-		message: 'Failed to get usage data for userId'
+		message: 'Failed to get usage data'
 	}
-	
+	const startKey = `${userId}${startTime}`
+	const endKey = `${userId}${(new Date).getTime()}`
+
 	const promise = new Promise((resolve, reject) => {
 		if (contract) {
 			try {
-				contract.evaluateTransaction('queryUsageForUser', userId)
+				contract.evaluateTransaction('queryUsageForUser', startKey, endKey)
 				.then(result => {
-					console.log(`Transaction getUsageForUser has been evaluated successfully`);
+					console.log(`Transaction getAllUsage has been evaluated successfully`);
 					resolve({
 						code: 1,
-						user: JSON.parse(ab2str(JSON.parse(result.toString()).data))
+						users: JSON.parse(result)
 					})
 				})
 			} catch (error) {
-				console.error(`Failed to evaluate transaction getUsageForUser: ${error}`);
+				console.error(`Failed to evaluate transaction getAllUsage: ${error}`);
 				reject(error)
 			}
 		} else {
-			console.error('Contract not found: getUsageForUser')
+			console.error('Contract not found: getAllUsage')
 			reject(error)
 		}
 	})
-	
+
 	return promise
 }
 
@@ -111,12 +117,13 @@ async function createUsage(usageData = {}) {
 		message: 'Failed to create user'
 	}
 	const { userId, time = 0, voltage = 0, current = 0, power = 0, frquency = 0, energy = 0 } = usageData
-	
+	const usageId = `${userId}${(new Date()).getTime()}`
+
 	const promise = new Promise((resolve, reject) => {
 		if (contract) {
 			if (userId) {
 				try {
-					contract.submitTransaction('createUser', userId, time, voltage, current, power, frquency, energy);
+					contract.submitTransaction('createUsage', usageId, userId, time, voltage, current, power, frquency, energy);
 					console.log(`Transaction createUsage has been submitted successfully`);
 					resolve({
 						code: 1,
