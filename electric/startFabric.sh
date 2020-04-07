@@ -22,8 +22,8 @@ if [ "$CC_SRC_LANGUAGE" != "go" -a "$CC_SRC_LANGUAGE" != "golang" -a "$CC_SRC_LA
 fi
 
 # clean out any old identites in the wallets
-rm -rf javascript/userWallet/*
-rm -rf javascript/usageWallet/*
+rm -rf javascript/userWallet
+rm -rf javascript/usageWallet
 
 # launch network; create channel and join peer to channel
 pushd ../test-network

@@ -223,7 +223,7 @@ chaincodeQuery() {
     sleep $DELAY
     echo "Attempting to Query peer0.org${ORG} ...$(($(date +%s) - starttime)) secs"
     set -x
-    peer chaincode query -C $CHANNEL_NAME -n electric -c '{"Args":["queryAllUsers"]}' >&log.txt
+    peer chaincode query -C $CHANNEL_NAME -n electric -c '{"Args":["queryAllUsers","USER0000","USER9999"]}' >&log.txt
     res=$?
     set +x
 		let rc=$res

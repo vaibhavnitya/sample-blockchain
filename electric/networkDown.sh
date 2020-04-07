@@ -13,5 +13,5 @@ pushd ../test-network
 popd
 
 # clean out any old identites in the wallets
-rm -rf javascript/userWallet/*
-rm -rf javascript/usageWallet/*
+rm -rf javascript/userWallet
+rm -rf javascript/usageWallet

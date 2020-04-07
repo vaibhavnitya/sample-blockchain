@@ -10,6 +10,8 @@ const fs = require('fs');
 var ab2str = require('arraybuffer-to-string');
 
 let contract = null
+const startUserId = 'USER0000'
+const endUserId 	= 'USER9999'
 
 async function initializeUserModule() {
 	try {
@@ -54,7 +56,7 @@ async function getAllUsers() {
 	const promise = new Promise((resolve, reject) => {
 		if (contract) {
 			try {
-				contract.evaluateTransaction('queryAllUsers')
+				contract.evaluateTransaction('queryAllUsers', startUserId, endUserId)
 				.then(result => {
 					console.log(`Transaction getAllUsers has been evaluated successfully`);
 					resolve({
