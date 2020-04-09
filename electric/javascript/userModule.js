@@ -20,7 +20,7 @@ async function initializeUserModule() {
 		const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 
 		// Create a new file system based wallet for managing identities.
-		const walletPath = path.join(process.cwd(), 'userWallet');
+		const walletPath = path.join(__dirname, 'userWallet');
 		const wallet = await Wallets.newFileSystemWallet(walletPath);
 		console.log(`Wallet path: ${walletPath}`);
 
@@ -93,6 +93,9 @@ async function getUser(userId) {
 						code: 1,
 						user: JSON.parse(ab2str(JSON.parse(result.toString()).data))
 					})
+				})
+				.catch(error => {
+					reject(error)
 				})
 			} catch (error) {
 				console.error(`Failed to evaluate transaction: ${error}`);
