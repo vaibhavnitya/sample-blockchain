@@ -10,8 +10,8 @@ const fs = require('fs');
 
 let contract = null
 const startTime = '1554650825727'
-const userIdStart = 'USER0000'
-const userIdEnd = 'USER9999'
+const usageIdStart = 'USAGE0000'
+const usageIdEnd = 'USAGE9999'
 
 async function initializeUsageModule() {
 	try {
@@ -52,8 +52,8 @@ async function getAllUsage() {
 		code: 0,
 		message: 'Failed to get usage data'
 	}
-	const startKey = `${userIdStart}${startTime}`
-	const endKey = `${userIdEnd}${(new Date).getTime()}`
+	const startKey = `${usageIdStart}${startTime}`
+	const endKey = `${usageIdEnd}${(new Date).getTime()}`
 
 	const promise = new Promise((resolve, reject) => {
 		if (contract) {
@@ -63,7 +63,7 @@ async function getAllUsage() {
 					console.log(`Transaction getAllUsage has been evaluated successfully`);
 					resolve({
 						code: 1,
-						users: JSON.parse(result)
+						usages: JSON.parse(result)
 					})
 				})
 			} catch (error) {
@@ -84,8 +84,9 @@ async function getUsageForUser(userId) {
 		code: 0,
 		message: 'Failed to get usage data'
 	}
-	const startKey = `${userId}${startTime}`
-	const endKey = `${userId}${(new Date).getTime()}`
+	const usageId = `USAGE${userId.split('USER')[1]}`
+	const startKey = `${usageId}${startTime}`
+	const endKey = `${usageId}${(new Date).getTime()}`
 
 	const promise = new Promise((resolve, reject) => {
 		if (contract) {
@@ -95,7 +96,7 @@ async function getUsageForUser(userId) {
 					console.log(`Transaction getAllUsage has been evaluated successfully`);
 					resolve({
 						code: 1,
-						users: JSON.parse(result)
+						usages: JSON.parse(result)
 					})
 				})
 			} catch (error) {
@@ -116,14 +117,14 @@ async function createUsage(usageData = {}) {
 		code: 0,
 		message: 'Failed to create user'
 	}
-	const { userId, time = 0, voltage = 0, current = 0, power = 0, frquency = 0, energy = 0 } = usageData
-	const usageId = `${userId}${(new Date()).getTime()}`
+	const { userId, time = 0, voltage = 0, current = 0, power = 0, frequency = 0, energy = 0 } = usageData
+	const usageId = `USAGE${userId.split('USER')[1]}${(new Date()).getTime()}`
 
 	const promise = new Promise((resolve, reject) => {
 		if (contract) {
 			if (userId) {
 				try {
-					contract.submitTransaction('createUsage', usageId, userId, time, voltage, current, power, frquency, energy);
+					contract.submitTransaction('createUsage', usageId, userId, time, voltage, current, power, frequency, energy);
 					console.log(`Transaction createUsage has been submitted successfully`);
 					resolve({
 						code: 1,

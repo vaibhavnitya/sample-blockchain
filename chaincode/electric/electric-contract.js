@@ -56,7 +56,7 @@ class Electric extends Contract {
 		return JSON.stringify(userAsBytes)
 	}
 
-	async createUsage(ctx, usageId, userId, time, voltage, current, power, frquency, energy) {
+	async createUsage(ctx, usageId, userId, time, voltage, current, power, frequency, energy) {
 		console.info('============= START : Create Usage ===========');
 
 		const car = {
@@ -65,7 +65,7 @@ class Electric extends Contract {
 			voltage,
 			current,
 			power,
-			frquency,
+			frequency,
 			energy,
 			docType: 'usage'
 		};
