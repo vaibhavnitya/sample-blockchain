@@ -47,6 +47,38 @@ async function initializeUserModule() {
 	}
 }
 
+function checkUserRegistered() {
+	const promise = new Promise((resolve, reject) => {
+		try {
+			// load the network configuration
+			const ccpPath = path.resolve(__dirname, '..', '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
+			const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
+
+			// Create a new file system based wallet for managing identities.
+			const walletPath = path.join(__dirname, 'userWallet');
+			Wallets.newFileSystemWallet(walletPath)
+			.then(wallet => {
+				wallet.get('appUser')
+				.then(identity => {
+					if (identity) {
+						resolve('User registered')
+					} else {
+						reject('User not registered')
+					}
+				}).catch(error => {
+					reject('User not registered')
+				})
+			}).catch(error => {
+				reject('User not registered')
+			})
+		} catch (error) {
+			reject('User not registered')
+		}
+	})
+
+	return promise
+}
+
 async function getAllUsers() {
 	const error = {
 		code: 0,
@@ -146,6 +178,7 @@ async function createUser(userData = {}) {
 
 const UserModule = {
 	initializeUserModule,
+	checkUserRegistered,
 	getAllUsers,
 	getUser,
 	createUser
