@@ -7,6 +7,7 @@
 const { Gateway, Wallets } = require('fabric-network');
 const path = require('path');
 const fs = require('fs');
+const chanelInfoModule = require('../../test-network/channelInfoModule')
 
 let contract = null
 const startTime = '1554650825727'
@@ -130,6 +131,8 @@ async function createUsage(usageData = {}) {
 						code: 1,
 						user: usageData
 					})
+					// Update the channel info traker
+					chanelInfoModule.updateChannelInfo()
 				} catch (error) {
 					console.error(`Failed to submit transaction createUsage: ${error}`);
 					reject(error)
